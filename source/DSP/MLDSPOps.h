@@ -55,7 +55,7 @@ constexpr auto make_array(Function f)
 }
 
 #if (_WIN32 && (!_WIN64))
-#define MANUAL_ALIGN_DSPVECTOR
+ #define MANUAL_ALIGN_DSPVECTOR
 #endif
 
 // ----------------------------------------------------------------
@@ -1413,7 +1413,7 @@ inline std::ostream& operator<<(std::ostream& out, const DSPVectorArray<ROWS>& v
 template <size_t ROWS>
 inline std::ostream& operator<<(std::ostream& out, const DSPVectorArrayInt<ROWS>& vecArray)
 {
-  out << "@" << std::hex << reinterpret_cast<unsigned long>(&vecArray) << std::dec << "\n ";
+  out << "@" << &vecArray << std::dec << "\n ";
   //    if(ROWS > 1) out << "[   ";
   for (int v = 0; v < ROWS; ++v)
   {

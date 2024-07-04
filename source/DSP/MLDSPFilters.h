@@ -818,16 +818,22 @@ class IntegerDelay
   }
   ~IntegerDelay() = default;
 
+  size_t size() { return mBuffer.size(); }
+
   // for efficiency, no bounds checking is done. Because mLengthMask is used to
   // constrain all reads, bad values here may make bad sounds (buffer wraps) but
   // will not attempt to read from outside the buffer.
-  inline void setDelayInSamples(int d) { mIntDelayInSamples = d; }
+  inline void setDelayInSamples(int d) 
+  { 
+    mIntDelayInSamples = d; 
+    if(mBuffer.size() == 0) setMaxDelayInSamples((float) d);
+  }
 
   void setMaxDelayInSamples(float d)
   {
     int dMax = static_cast<int>(floorf(d));
     int newSize = 1 << bitsToContain(dMax + kFloatsPerDSPVector);
-    mBuffer.resize(newSize);
+    mBuffer.resize(max(1, newSize));
     mLengthMask = newSize - 1;
     mWriteIndex = 0;
     clear();
@@ -1036,7 +1042,7 @@ class FractionalDelay
     DSPVector vy;
     for (int n = 0; n < kFloatsPerDSPVector; ++n)
     {
-      if (vChangeTicks[n] != 0)
+      if (vChangeTicks[n] != 0 || mIntegerDelay.size() == 0)
       {
         setDelayInSamples(vDelayInSamples[n]);
       }
@@ -1180,7 +1186,7 @@ class FDN
     {
       // we have one DSPVector feedback latency, so compensate delay times for
       // that.
-      int len = times[n] - kFloatsPerDSPVector;
+      int len = (int) (times[n] - kFloatsPerDSPVector);
       len = max(1, len);
       mDelays[n].setDelayInSamples(len);
     }
