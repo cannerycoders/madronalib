@@ -149,8 +149,10 @@ class DSPVectorArray
   // rewrite without std::function
 
   // default constructor: zeroes the data.
-  // TODO this seems to be taking a lot of time! investigate
-  DSPVectorArray() { mData.mArrayData.fill(0.f); }
+  DSPVectorArray() { 
+    // mData.mArrayData.fill(0.f); // TODO this seems to be taking a lot of time! investigate
+    memset(&mData, sizeof(mData), 0); // on vs22 this was measurably faster.
+}
 
   // conversion constructor to float.  This keeps the syntax of common DSP code
   // shorter: "va + DSPVector(1.f)" becomes just "va + 1.f".
